@@ -16,7 +16,9 @@ export default function App(): ReactElement {
         <Header current={day} />
         <main>
           <Route path={'/'}>
-            <h1>Welcome!</h1>
+            <Container size={'sm'}>
+              <h1>Welcome!</h1>
+            </Container>
           </Route>
           <Route path={'/day:day'}>
             <Solution day={day ?? 0} />

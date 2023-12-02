@@ -1,4 +1,4 @@
-import { Button, Group } from '@mantine/core';
+import { Anchor, Button, Group } from '@mantine/core';
 import { type MouseEventHandler, type ReactElement } from 'react';
 import { Link } from 'wouter';
 import '@mantine/core/styles/UnstyledButton.css';
@@ -12,12 +12,22 @@ export function Header({ current }: { current?: number }): ReactElement {
 
   return (
     <header>
-      <div>
-        <span style={{ fontFamily: 'HELLO Holidays', fontSize: 70 }}>
-          Advent of Code
-        </span>
-        <span style={{ fontSize: 28, marginLeft: 8 }}> 2023</span>
-      </div>
+      <Link href="/">
+        <Anchor c={'white'}>
+          <span style={{ fontFamily: 'HELLO Holidays', fontSize: 70 }}>
+            Advent of Code
+          </span>{' '}
+          <span
+            style={{
+              display: 'inline-block',
+              fontSize: 28,
+              transform: 'rotate(-10deg) translate(6px,-23px)',
+            }}
+          >
+            2023
+          </span>
+        </Anchor>
+      </Link>
       <nav>
         <Group gap={'3px'}>
           {Object.entries(daysSolved).map(([day, solved]) => {
