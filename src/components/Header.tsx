@@ -12,7 +12,12 @@ export function Header({ current }: { current?: number }): ReactElement {
 
   return (
     <header>
-      <div>Advent of Code – 2023</div>
+      <div>
+        <span style={{ fontFamily: 'HELLO Holidays', fontSize: 70 }}>
+          Advent of Code
+        </span>
+        <span style={{ fontSize: 28, marginLeft: 8 }}> 2023</span>
+      </div>
       <nav>
         <Group gap={'3px'}>
           {Object.entries(daysSolved).map(([day, solved]) => {
