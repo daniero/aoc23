@@ -7,8 +7,9 @@ import input1 from './input1.txt?raw';
 export default function Index(): ReactElement {
   const input = useInput([['Sample 1', input1]]);
 
-  const data = parseIntput(input.value);
-  const part1 = solvePart1(data);
+  const games = parseIntput(input.value);
+  const part1 = solvePart1(games);
+  const part2 = solvePart2(games);
 
   return (
     <Container size={'sm'}>
@@ -19,19 +20,21 @@ export default function Index(): ReactElement {
       <h2>Solution</h2>
       <h3>Part 1</h3>
       <Card>{part1}</Card>
+      <h3>Part 2</h3>
+      <Card>{part2}</Card>
     </Container>
   );
 }
 
 const merge = (prev: object, next: object): object => ({ ...prev, ...next });
 
-interface Subset {
+interface Cubes {
   red: number;
   blue: number;
   green: number;
 }
 
-const empty: Subset = {
+const empty: Cubes = {
   red: 0,
   blue: 0,
   green: 0,
@@ -57,15 +60,15 @@ function parseIntput(input: string) {
             const [count, name] = color.trim().split(' ');
             return { [name]: parseInt(count) };
           })
-          .reduce(merge, empty) as Subset;
+          .reduce(merge, empty) as Cubes;
       });
 
       return { game, subsets };
     });
 }
 
-function solvePart1(data: Game[]): number {
-  return data
+function solvePart1(games: Game[]): number {
+  return games
     .filter(({ subsets }) =>
       subsets.every(
         ({ blue, green, red }) => red <= 12 && green <= 13 && blue <= 14
@@ -73,4 +76,21 @@ function solvePart1(data: Game[]): number {
     )
     .map((game) => game.game)
     .reduce((a, b) => a + b, 0);
+}
+
+function solvePart2(games: Game[]): number {
+  return games
+    .map((game) => {
+      const minCubes = game.subsets.reduce(
+        (min, next) => ({
+          red: Math.max(min.red, next.red),
+          green: Math.max(min.green, next.green),
+          blue: Math.max(min.blue, next.blue),
+        }),
+        empty
+      );
+
+      return minCubes.red * minCubes.green * minCubes.blue;
+    })
+    .reduce((sum, power) => sum + power, 0);
 }
