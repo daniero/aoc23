@@ -30,8 +30,6 @@ export function InputSelector({
   return (
     <>
       <SegmentedControl
-        variant={'filled'}
-        transitionDuration={0}
         data={input.inputs.map((data, i) => ({
           value: i.toString(),
           label: data[0],
@@ -41,6 +39,7 @@ export function InputSelector({
         }}
       />
       <Textarea
+        styles={{ input: { fontFamily: 'monospace' } }}
         rows={8}
         value={input.value}
         onInput={(e) => {

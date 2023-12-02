@@ -5,7 +5,7 @@ import input2 from './input2.txt?raw';
 import { InputSelector, useInput } from '../../components/InputSelector.tsx';
 import { DayTitle } from '../../components/DayTitle.tsx';
 
-export default function Index(): ReactElement {
+export default function Day1(): ReactElement {
   const input = useInput([
     ['Simple', input1],
     ['Overlapping', input2],

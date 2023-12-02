@@ -4,7 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 export function Solution({ day }: { day: number }): ReactElement {
   const folder = String(day).padStart(2, '0');
   const Module = lazy(
-    async () => await import(`../solutions/${folder}/Index.tsx`)
+    async () => await import(`../solutions/${folder}/Day${day}.tsx`)
   );
 
   return (

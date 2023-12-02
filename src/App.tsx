@@ -5,10 +5,11 @@ import { Header } from './components/Header.tsx';
 import { Route, useRoute } from 'wouter';
 import { Solution } from './components/Solution.tsx';
 import { type ReactElement } from 'react';
+import { Welcome } from './Welcome.tsx';
 
 export default function App(): ReactElement {
-  const [matcb, params] = useRoute('/day:day');
-  const day = matcb ? parseInt(params.day) : undefined;
+  const [match, params] = useRoute('/day:day');
+  const day = match ? parseInt(params.day) : undefined;
 
   return (
     <MantineProvider theme={theme} defaultColorScheme={'dark'}>
@@ -16,9 +17,7 @@ export default function App(): ReactElement {
         <Header current={day} />
         <main>
           <Route path={'/'}>
-            <Container size={'sm'}>
-              <h1>Welcome!</h1>
-            </Container>
+            <Welcome />
           </Route>
           <Route path={'/day:day'}>
             <Solution day={day ?? 0} />

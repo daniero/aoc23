@@ -1,8 +1,6 @@
-Advent of code
-==============
+Advent of Code 2023
+===================
 
 Ho ho ho!
 
-## Docs
-
-- [Mantine](https://mantine.dev/guides/vite/)
+https://aoc23.netlify.app
