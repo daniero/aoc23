@@ -4,6 +4,7 @@ import { Link } from 'wouter';
 import '@mantine/core/styles/UnstyledButton.css';
 import '@mantine/core/styles/Button.css';
 import { daysSolved } from '../days-solved.ts';
+import steez from './Header.module.scss';
 
 export function Header({ current }: { current?: number }): ReactElement {
   const prevent: MouseEventHandler = (event) => {
@@ -13,23 +14,13 @@ export function Header({ current }: { current?: number }): ReactElement {
   return (
     <header>
       <Link href="/">
-        <Anchor c={'white'}>
-          <span style={{ fontFamily: 'HELLO Holidays', fontSize: 70 }}>
-            Advent of Code
-          </span>{' '}
-          <span
-            style={{
-              display: 'inline-block',
-              fontSize: 28,
-              transform: 'rotate(-10deg) translate(6px,-23px)',
-            }}
-          >
-            2023
-          </span>
+        <Anchor c={'white'} className={steez.logo}>
+          <span className={steez.aoc}>Advent of Code</span>{' '}
+          <span className={steez.y23}>2023</span>
         </Anchor>
       </Link>
       <nav>
-        <Group gap={'3px'}>
+        <Group gap={3}>
           {Object.entries(daysSolved).map(([day, solved]) => {
             const isCurrentPage = current?.toString() === day;
             return (

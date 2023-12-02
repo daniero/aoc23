@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react';
-import { Anchor, Group, Text } from '@mantine/core';
+import { Anchor, Group, Text, Title } from '@mantine/core';
 
 interface Props {
   day: number;
@@ -10,7 +10,7 @@ export function DayTitle({ day, title }: Props): ReactElement {
   const folder = String(day).padStart(2, '0');
   return (
     <Group justify={'space-between'}>
-      <h1>
+      <Title my={'xl'}>
         Day {day}:{' '}
         <Text
           component={'a'}
@@ -21,7 +21,7 @@ export function DayTitle({ day, title }: Props): ReactElement {
         >
           {title}
         </Text>
-      </h1>
+      </Title>
       <Anchor
         c={'xgreen'}
         href={`https://github.com/daniero/aoc23/blob/master/src/solutions/${folder}/Day${day}.tsx`}
