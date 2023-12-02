@@ -8,13 +8,22 @@
       content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
     />
     <title>Advent of Code</title>
+    <style>
+      @import url('https://fonts.cdnfonts.com/css/hello-holidays');
+      body {
+        background-color: rgb(27, 22, 22);
+        background-image: repeating-linear-gradient(
+                to bottom,
+                rgb(30, 24, 24) 12px,
+                rgb(27, 22, 22) 14px,
+                rgb(27, 22, 22) 18px,
+                rgb(56, 46, 46) 18px
+        );
+      }
+    </style>
   </head>
-  <!-- Mantine dark theme color - prevent white flash on load -->
-  <body style="background-color: rgb(27, 22, 22)"><!-- rgb(26, 27, 30) -->
+  <body>
     <div id="root"></div>
     <script type="module" src="./src/main.tsx"></script>
-    <style>
-        @import url('https://fonts.cdnfonts.com/css/hello-holidays');
-    </style>
   </body>
 </html>
