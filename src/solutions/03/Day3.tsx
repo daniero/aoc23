@@ -10,6 +10,7 @@ export default function Day2(): ReactElement {
 
   const grid = createGrid(input.value);
   const part1 = solvePart1(grid);
+  const part2 = solvePart2(grid);
 
   return (
     <Container size={'sm'}>
@@ -18,8 +19,12 @@ export default function Day2(): ReactElement {
       <InputSelector input={input} />
 
       <h2>Solution</h2>
+
       <h3>Part 1</h3>
       <Card>{part1}</Card>
+
+      <h3>Part 2</h3>
+      <Card>{part2}</Card>
     </Container>
   );
 }
@@ -98,6 +103,27 @@ export function solvePart1(grid: Node[][]): number {
     });
   });
 
+  return sum;
+}
+
+export function solvePart2(grid: Node[][]): number {
+  let sum = 0;
+  grid.forEach((row) => {
+    row.forEach((e) => {
+      if (e.char === '*') {
+        const uniqNeighbours = [
+          ...neighbours(grid, e.x, e.y)
+            .map(([, , n]) => n)
+            .filter((n) => n.id)
+            .reduce((m, n) => m.set(n.id as symbol, n), new Map())
+            .values(),
+        ];
+        if (uniqNeighbours.length === 2) {
+          sum += uniqNeighbours[0].n * uniqNeighbours[1].n;
+        }
+      }
+    });
+  });
   return sum;
 }
 

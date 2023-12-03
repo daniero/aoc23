@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { createGrid, solvePart1 } from './Day3.tsx';
+import { createGrid, solvePart1, solvePart2 } from './Day3.tsx';
 import input1 from './input1.txt?raw';
 
-describe('part 1', () => {
-  it('works', () => {
-    expect(solvePart1(createGrid(input1))).toEqual(4361);
+describe('Day 3', () => {
+  const grid = createGrid(input1);
+
+  it('solves part 1', () => {
+    expect(solvePart1(grid)).toEqual(4361);
+  });
+
+  it('solves part 2', () => {
+    expect(solvePart2(grid)).toEqual(467835);
   });
 });
