@@ -6,10 +6,10 @@ describe('Day 3', () => {
   const grid = createGrid(input1);
 
   it('solves part 1', () => {
-    expect(solvePart1(grid)).toEqual(4361);
+    expect(solvePart1(grid).sum).toEqual(4361);
   });
 
   it('solves part 2', () => {
-    expect(solvePart2(grid)).toEqual(467835);
+    expect(solvePart2(grid).sum).toEqual(467835);
   });
 });
