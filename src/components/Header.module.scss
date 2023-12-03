@@ -1,14 +1,19 @@
 .logo {
   --bg-size: 200%;
+  font-size: 28px;
+
+  @media only screen and (max-width: 600px) {
+    font-size: clamp(10px, 5.8vw, 28px);
+  }
 
   .aoc {
     font-family: HELLO Holidays, serif;
-    font-size: 70px;
+    font-size: 2.5em;
   }
 
   .y23 {
     display: inline-block;
-    font-size: 28px;
+    font-size: 1em;
     transform: rotate(-10deg) translate(6px, -23px);
   }
 
