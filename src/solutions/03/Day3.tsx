@@ -3,7 +3,9 @@ import { type ReactElement } from 'react';
 import { DayTitle } from '../../components/DayTitle.tsx';
 import { InputSelector, useInput } from '../../components/InputSelector.tsx';
 import input1 from './input1.txt?raw';
-import { loop, range } from '../../utils/arrays.ts';
+import { loop } from '../../utils/arrays.ts';
+import { match } from '../../utils/regex.ts';
+import { neighbours } from '../../utils/grid.ts';
 
 export default function Day2(): ReactElement {
   const input = useInput([['Sample 1', input1]]);
@@ -27,25 +29,6 @@ export default function Day2(): ReactElement {
       <Card>{part2}</Card>
     </Container>
   );
-}
-
-/**
- * [x, y, element]
- */
-type Neighbour<T> = [number, number, T];
-
-function neighbours<T>(grid: T[][], x: number, y: number): Array<Neighbour<T>> {
-  const yStart = Math.max(0, y - 1);
-  const yStop = Math.min(grid.length, y + 2);
-
-  return range(yStart, yStop).flatMap((ny) => {
-    const xStart = Math.max(0, x - 1);
-    const xStop = Math.min(grid[ny].length, x + 2);
-
-    return range(xStart, xStop)
-      .filter((nx) => !(nx === x && ny === y))
-      .map((nx) => [nx, ny, grid[ny][nx]] as Neighbour<T>);
-  });
 }
 
 interface Node {
@@ -92,7 +75,7 @@ export function solvePart1(grid: Node[][]): number {
   grid.forEach((row) => {
     row.forEach((e) => {
       if (e.id !== null && !visitedNumbers.has(e.id)) {
-        for (const [, , n] of neighbours(grid, e.x, e.y)) {
+        for (const [n] of neighbours(grid, e.x, e.y)) {
           if (n.char !== '.' && !/\d/.test(n.char)) {
             sum += e.n as number;
             visitedNumbers.add(e.id);
@@ -113,7 +96,7 @@ export function solvePart2(grid: Node[][]): number {
       if (e.char === '*') {
         const uniqNeighbours = [
           ...neighbours(grid, e.x, e.y)
-            .map(([, , n]) => n)
+            .map(([n]) => n)
             .filter((n) => n.id)
             .reduce((m, n) => m.set(n.id as symbol, n), new Map())
             .values(),
@@ -125,18 +108,4 @@ export function solvePart2(grid: Node[][]): number {
     });
   });
   return sum;
-}
-
-function match(s: string, p: RegExp): RegExpExecArray[] {
-  if (!p.global) {
-    const m = p.exec(s);
-    return m ? [m] : [];
-  }
-
-  const a = [];
-  let m;
-  while ((m = p.exec(s))) {
-    a.push(m);
-  }
-  return a;
 }
