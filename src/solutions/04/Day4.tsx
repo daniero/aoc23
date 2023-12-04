@@ -6,6 +6,7 @@ import { InputSelector, useInput } from '../../components/InputSelector.tsx';
 import { DayTitle } from '../../components/DayTitle.tsx';
 import { match } from '../../utils/regex.ts';
 import { loop } from '../../utils/arrays.ts';
+import { ScratchcardVisualizer } from './ScratchcardVisualizer.tsx';
 
 export default function Day4(): ReactElement {
   const input = useInput([
@@ -15,6 +16,7 @@ export default function Day4(): ReactElement {
 
   const [showInput, setShowInput] = useState(false);
   const [run, setRun] = useState(false);
+  const [key, setKey] = useState(1);
 
   const cards = parseInput(input.value);
   const part1 = solvePart1(cards);
@@ -26,25 +28,40 @@ export default function Day4(): ReactElement {
         <DayTitle day={4} title={'Scratchcards'} />
 
         <Group mt={'xl'} justify="space-between">
-          <Button
-            onClick={() => {
-              setShowInput(false);
-              setRun((r) => !r);
-            }}
-          >
-            {run ? 'Stop' : 'Run'}
-          </Button>
+          <span>
+            <Button
+              onClick={() => {
+                setShowInput(false);
+                setRun((r) => !r);
+              }}
+            >
+              {run ? 'Stop' : 'Run'}
+            </Button>
+            {!run && (
+              <Button
+                ml={'sm'}
+                variant={'subtle'}
+                onClick={() => {
+                  setKey((k) => k + 1);
+                }}
+              >
+                Reset
+              </Button>
+            )}
+          </span>
 
-          <Button
-            color={'xgreen'}
-            variant={'subtle'}
-            onClick={() => {
-              setRun(false);
-              setShowInput((x) => !x);
-            }}
-          >
-            {showInput ? 'Hide input' : 'Edit input'}
-          </Button>
+          {!run && (
+            <Button
+              color={'gray'}
+              variant={'subtle'}
+              onClick={() => {
+                setRun(false);
+                setShowInput((x) => !x);
+              }}
+            >
+              {showInput ? 'Hide input' : 'Edit input'}
+            </Button>
+          )}
         </Group>
         {showInput ? (
           <>
@@ -52,20 +69,12 @@ export default function Day4(): ReactElement {
             <InputSelector input={input} />
           </>
         ) : (
-          <Card component={'pre'} fz={input.current === 1 ? '12' : undefined}>
-            {cards.map((card) => {
-              return (
-                <div key={card.id}>
-                  {(run ? '1' : ' ').toString().padStart(8)}
-                  {run ? ' x ' : '   '}
-                  <span>{card.id}</span>:{' '}
-                  {card.wins.map((n) => n.toString().padStart(2)).join(' ')}
-                  {' | '}
-                  {card.nums.map((n) => n.toString().padStart(2)).join(' ')}
-                </div>
-              );
-            })}
-          </Card>
+          <ScratchcardVisualizer
+            key={key}
+            cards={cards}
+            run={run}
+            size={input.current === 1 ? 'lg' : 'sm'}
+          />
         )}
 
         <h2>Solution</h2>
@@ -80,7 +89,7 @@ export default function Day4(): ReactElement {
   );
 }
 
-interface Scratchcard {
+export interface Scratchcard {
   id: string;
   wins: number[];
   nums: number[];
@@ -125,3 +134,4 @@ export function solvePart2(cards: Scratchcard[]): number {
 }
 
 // 1073 too low
+// [].with
