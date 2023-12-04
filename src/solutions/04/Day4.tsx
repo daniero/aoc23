@@ -15,7 +15,7 @@ export default function Day4(): ReactElement {
   const lines = input.value.trim().split('\n');
   const cards = parseInput(lines);
   const part1 = solvePart1(cards);
-  const part2 = solvePart2(lines);
+  const part2 = solvePart2(cards);
 
   return (
     <>
