@@ -5,19 +5,23 @@ export function useInput(inputs: Array<[string, string]>): {
   value: string;
   change: (value: ((prevState: string) => string) | string) => void;
   inputs: Array<[string, string]>;
+  current: number;
   select: (i: number) => void;
 } {
   const initial = inputs[0]?.[1] ?? '';
+  const [selected, setSelected] = useState(0);
   const [value, setValue] = useState(initial);
 
   function select(i: number): void {
     setValue(inputs[i][1]);
+    setSelected(i);
   }
 
   return {
     value,
     change: setValue,
     inputs,
+    current: selected,
     select,
   };
 }
@@ -34,6 +38,7 @@ export function InputSelector({
           value: i.toString(),
           label: data[0],
         }))}
+        value={input.current.toString()}
         onChange={(v) => {
           input.select(parseInt(v));
         }}

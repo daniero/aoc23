@@ -1,0 +1,34 @@
+.win {
+  color: green;
+  @extend .flash
+}
+
+.flash {
+  animation-name: flash;
+  animation-duration: .5s;
+}
+
+@keyframes flash {
+  0% {
+    text-shadow: 0 0 5px #ffa500, 0 0 15px #ffa500, 0 0 20px #ffa500, 0 0 40px #ffa500, 0 0 60px #ff0000, 0 0 10px #ff8d00, 0 0 98px #ff0000;
+    color: #fff6a9;
+  }
+  100% {
+    text-shadow: none;
+  }
+}
+
+.flash2 {
+  animation-name: flash2;
+  animation-duration: .5s;
+}
+
+@keyframes flash2 {
+  0% {
+    text-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 17px #fff;
+    color: #fff6a9;
+  }
+  100% {
+    text-shadow: none;
+  }
+}
