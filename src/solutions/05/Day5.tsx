@@ -19,7 +19,7 @@ export default function Day5(): ReactElement {
   return (
     <>
       <Container size={'sm'}>
-        <DayTitle day={5} title={'Template'} />
+        <DayTitle day={5} title={'If You Give A Seed A Fertilizer'} />
 
         <h2>Input</h2>
         <InputSelector input={input} />
@@ -39,7 +39,13 @@ export default function Day5(): ReactElement {
   );
 }
 
-function toMapper(destStart: number, srcStart: number, length: number) {
+interface Mapper {
+  min: number;
+  max: number;
+  inc: number;
+}
+
+function toMapper(destStart: number, srcStart: number, length: number): Mapper {
   return {
     min: srcStart,
     max: srcStart + length - 1,
@@ -47,18 +53,17 @@ function toMapper(destStart: number, srcStart: number, length: number) {
   };
 }
 
-const x = toMapper(50, 98, 2);
-console.log(x);
+interface ParsedInput {
+  seeds: number[];
+  categories: Array<{ name: string; mappers: Mapper[] }>;
+}
 
-type ParsedInput = ReturnType<typeof parseInput>;
+export function parseInput(input: string): ParsedInput {
+  const [s, ...c] = input.trim().split('\n\n');
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function parseInput(input: string) {
-  const [s, ...m] = input.trim().split('\n\n');
+  const seeds = match(s, /\d+/g).map((s) => parseInt(s[0]));
 
-  const seeds = match(s, /\d+/g).map((s) => parseInt(s));
-
-  const mappers = m.map((line) => {
+  const categories = c.map((line) => {
     const [head, ...tail] = line.split('\n').map((l) => l.trim());
 
     const [name] = head.split(' ');
@@ -68,34 +73,40 @@ export function parseInput(input: string) {
       return toMapper(...(p as [number, number, number]));
     });
 
-    return { name, ranges: mappers };
+    return { name, mappers };
   });
 
-  return { seeds, mappers };
+  return { seeds, categories };
 }
 
-export function solvePart1(lines: ParsedInput): any {
-  const { seeds, mappers } = lines;
+export function solvePart1(input: ParsedInput): any {
+  const { seeds, categories } = input;
 
   const trails = seeds.map((seed) => {
-    const init = { current: seed, steps: [] };
+    const init = {
+      result: seed,
+      steps: [] as Array<{ name: string; value: number }>,
+    };
 
-    const trail = mappers.reduce(({ current, steps }, mapper) => {
-      const inc =
-        mapper.ranges.find(
-          (range) => range.min <= current && range.max >= current
-        )?.inc ?? 0;
+    const trail = categories.reduce((prev, category) => {
+      const mapper = category.mappers.find(
+        (range) => range.min <= prev.result && range.max >= prev.result
+      );
+      const inc = mapper?.inc ?? 0;
 
-      const next = current + inc;
-      return { current: next, steps: [...steps, [mapper.name, next]] };
+      const nextValue = prev.result + inc;
+      return {
+        result: nextValue,
+        steps: [...prev.steps, { name: category.name, value: nextValue }],
+      };
     }, init);
 
-    return { seed, trail: trail.steps };
+    return { seed, trail };
   });
 
-  return Math.min(...trails.map((t) => t.trail[t.trail.length - 1][1]));
+  return Math.min(...trails.map((t) => t.trail.result));
 }
 
-export function solvePart2(lines: ParsedInput): any {
-  return lines;
+export function solvePart2(input: ParsedInput): any {
+  return input;
 }
