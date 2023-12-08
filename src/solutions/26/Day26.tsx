@@ -11,9 +11,9 @@ export default function Day26(): ReactElement {
     ['Large', input2],
   ]);
 
-  const lines = parseInput(input.value);
-  const part1 = solvePart1(lines);
-  // const part2 = solvePart2(lines);
+  const parsedInput = parseInput(input.value);
+  const part1 = solvePart1(parsedInput);
+  // const part2 = solvePart2(parsedInput);
 
   return (
     <>
@@ -22,6 +22,11 @@ export default function Day26(): ReactElement {
 
         <h2>Input</h2>
         <InputSelector input={input} />
+
+        <h3>Parsed</h3>
+        <Card component={'pre'}>
+          {JSON.stringify(parsedInput, undefined, 2)}
+        </Card>
 
         <h2>Solution</h2>
 
