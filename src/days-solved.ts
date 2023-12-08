@@ -6,7 +6,7 @@ export const daysSolved = {
   5: true,
   6: false,
   7: true,
-  8: false,
+  8: true,
   9: false,
   10: false,
   11: false,
