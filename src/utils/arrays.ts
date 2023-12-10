@@ -1,3 +1,12 @@
+export function replace<T>(
+  arr: T[],
+  index: number,
+  replaceFn: (t: T) => T
+): T[] {
+  const newT = arr.at(index) as T; // ignore undefined
+  return arr.with(index, replaceFn(newT));
+}
+
 export function range(start: number, stop: number): number[] {
   const size = stop - start;
   return new Array(size).fill(false).map((_, i) => i + start);

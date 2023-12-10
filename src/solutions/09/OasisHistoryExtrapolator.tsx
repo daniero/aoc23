@@ -1,70 +1,12 @@
-import { Button, Card, Group } from '@mantine/core';
-import {
-  type ReactElement,
-  type Reducer,
-  useEffect,
-  useReducer,
-  useRef,
-} from 'react';
+import { Button, Card, Center, Group, Slider } from '@mantine/core';
+import { type ReactElement, useEffect, useReducer, useRef } from 'react';
 import { useRefState } from '../../utils/useRefState.ts';
-
-interface State {
-  sum: number;
-  log: number[][];
-  actions: StateAction[];
-}
-
-function initializeState(log: number[][]): State {
-  return {
-    sum: 0,
-    log,
-    actions: [
-      { type: 'foo', payload: 123 },
-      { type: 'foo', payload: 456 },
-    ],
-  };
-}
-
-type DispatchAction =
-  | {
-      type: 'reset';
-      log: number[][];
-    }
-  | { type: 'tick'; steps: number };
-
-type StateAction =
-  | {
-      type: 'foo';
-      payload: number;
-    }
-  | {
-      type: 'bar';
-      payload: string;
-    };
-
-const mainReducer: Reducer<State, DispatchAction> = (state, action) => {
-  switch (action.type) {
-    case 'reset':
-      return initializeState(action.log);
-    case 'tick': {
-      if (state.actions.length === 0) return state;
-      const [nextAction, ...restActions] = state.actions;
-      return stateReducer({ ...state, actions: restActions }, nextAction);
-    }
-  }
-};
-
-const stateReducer: Reducer<State, StateAction> = (state, action) => {
-  switch (action.type) {
-    // TODO --- actually do something here
-    case 'foo': {
-      return { ...state, log: [...state.log, [action.payload]] };
-    }
-    case 'bar': {
-      return state;
-    }
-  }
-};
+import {
+  type HighlightableNumber,
+  initializeState,
+  mainReducer,
+} from './state.ts';
+import styles from './styles.module.scss';
 
 export function OasisHistoryExtrapolator({
   log,
@@ -91,12 +33,27 @@ export function OasisHistoryExtrapolator({
     };
   }, [runRef]);
 
+  useEffect(() => {
+    if (state.done) {
+      setRunning(false);
+    }
+  }, [state.done]);
+
+  useEffect(() => {
+    dispatch({ type: 'reset', log });
+  }, [log]);
+
+  const outputFontSize = log.length > 20 ? 11 : 16;
+
   return (
     <>
       <Group justify={'space-between'}>
-        <span>
+        <div style={{ flexGrow: 2 }}>
           <Button
             onClick={() => {
+              if (state.done) {
+                dispatch({ type: 'reset', log });
+              }
               setRunning(!runState);
             }}
           >
@@ -111,23 +68,92 @@ export function OasisHistoryExtrapolator({
           >
             Step
           </Button>
-        </span>
-        <Button
-          variant={'subtle'}
-          onClick={() => {
-            setRunning(false);
-            dispatch({ type: 'reset', log });
-          }}
-        >
-          Reset
-        </Button>
+        </div>
+        <div style={{ flexGrow: 1, display: 'none' }}>
+          <Slider
+            color={'xgreen'}
+            label={'speed'}
+            min={1}
+            max={10}
+            marks={[
+              { value: 1, label: '10%' },
+              { value: 5, label: '50%' },
+              { value: 10, label: '100%' },
+            ]}
+          />
+        </div>
+        <div style={{ flexGrow: 2, textAlign: 'right' }}>
+          <Button
+            variant={'subtle'}
+            onClick={() => {
+              dispatch({ type: 'reset', log });
+            }}
+          >
+            Reset
+          </Button>
+        </div>
       </Group>
 
-      <Card component={'pre'}>
+      <Card mt={'md'}>
+        <Center>
+          <span
+            key={'s-' + state.sum}
+            className={state.sum > 0 ? styles.flash2 : undefined}
+          >
+            {state.sum !== 0 ? state.sum : '-'}
+          </span>
+        </Center>
+      </Card>
+
+      <Card component={'pre'} fz={outputFontSize}>
+        {state.processed.map((line, i) => {
+          return (
+            <div key={'p' + i}>
+              {line.map((n, j) => {
+                return (
+                  <span
+                    key={'p' + i + '-' + j}
+                    className={n.hl ? styles.extra : undefined}
+                  >
+                    {n.n}{' '}
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })}
+        <div>---</div>
+        {state.currentlyProcessing?.map((line, i) => (
+          <div key={'c' + i}>
+            {line.length === 0 && ' '}
+            {line.map((value, j) => {
+              const style = valueStyle(value);
+
+              return (
+                <span key={'c' + i + '-' + j} className={style}>
+                  {value.n}{' '}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+        <div>---</div>
         {state.log.map((line, i) => (
-          <div key={i}>{line.join(' ')}</div>
+          <div key={'l' + i}>{line.join(' ')}</div>
         ))}
       </Card>
     </>
   );
+}
+
+function valueStyle(value: HighlightableNumber): string | undefined {
+  switch (value.hl) {
+    case 'diff':
+      return styles.flash2;
+    case 'placeholder':
+      return styles.extra + ' ' + styles.flash2;
+    case 'sum':
+      return styles.extra + ' ' + styles.flash;
+  }
+  return undefined;
 }
