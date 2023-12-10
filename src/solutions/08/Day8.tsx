@@ -25,11 +25,6 @@ export default function Day8(): ReactElement {
         <h2>Input</h2>
         <InputSelector input={input} />
 
-        <h3>Parsed</h3>
-        <Card component={'pre'}>
-          {JSON.stringify(parsedInput, undefined, 2)}
-        </Card>
-
         <h2>Solution</h2>
 
         <h3>Part 1</h3>

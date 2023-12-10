@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import input1 from '../26/input1.txt?raw';
+import input1 from './input1.txt?raw';
 import { parseInput, solvePart1, solvePart2 } from './Day8.tsx';
 
 describe.skip('Day 8', () => {
