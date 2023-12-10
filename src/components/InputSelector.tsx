@@ -1,15 +1,18 @@
 import { type ReactElement, useState } from 'react';
-import { SegmentedControl, Textarea } from '@mantine/core';
+import { Anchor, SegmentedControl, Textarea } from '@mantine/core';
 
-export function useInput(inputs: Array<[string, string]>): {
+export function useInput(
+  inputs: Array<[string, string]>,
+  initiallySelected: number = 0
+): {
   value: string;
   change: (value: ((prevState: string) => string) | string) => void;
   inputs: Array<[string, string]>;
   current: number;
   select: (i: number) => void;
 } {
-  const initial = inputs[0]?.[1] ?? '';
-  const [selected, setSelected] = useState(0);
+  const initial = inputs[initiallySelected]?.[1] ?? '';
+  const [selected, setSelected] = useState(initiallySelected);
   const [value, setValue] = useState(initial);
 
   function select(i: number): void {
@@ -28,12 +31,17 @@ export function useInput(inputs: Array<[string, string]>): {
 
 export function InputSelector({
   input,
+  rows = 8,
+  day,
 }: {
   input: ReturnType<typeof useInput>;
+  rows?: number;
+  day?: number;
 }): ReactElement {
   return (
     <>
       <SegmentedControl
+        mr={'lg'}
         data={input.inputs.map((data, i) => ({
           value: i.toString(),
           label: data[0],
@@ -43,9 +51,19 @@ export function InputSelector({
           input.select(parseInt(v));
         }}
       />
+
+      {day !== undefined && (
+        <Anchor
+          c={'xgreen'}
+          href={'https://adventofcode.com/2023/day/' + day + '/input'}
+        >
+          Get your own, laaarge input here
+        </Anchor>
+      )}
+
       <Textarea
         styles={{ input: { fontFamily: 'monospace' } }}
-        rows={8}
+        rows={rows}
         value={input.value}
         onInput={(e) => {
           input.change(e.currentTarget.value);

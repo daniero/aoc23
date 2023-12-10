@@ -17,19 +17,27 @@ import {
 } from '@mantine/core';
 import input1 from './input1.txt?raw';
 import input2 from './input2.txt?raw';
-import { useInput } from '../../components/InputSelector.tsx';
+import input3 from './input3.txt?raw';
+import input4 from './input4.txt?raw';
+import { InputSelector, useInput } from '../../components/InputSelector.tsx';
 import { DayTitle } from '../../components/DayTitle.tsx';
 import css from './day10.module.scss';
-import { initializeState, parseInput, reducer, S, type Node } from './state.ts';
+import { initializeState, type Node, parseInput, reducer, S } from './state.ts';
 import { useRefState } from '../../utils/useRefState.ts';
 
 export default function Day10(): ReactElement {
   const [, setPart] = useState<1 | 2>(1);
-  const input = useInput([
-    ['Large', input2],
-    ['Sample', input1],
-  ]);
-  const grid = useMemo(() => parseInput(input.value), [input]);
+  const [showInput, setShowInput] = useState(false);
+  const input = useInput(
+    [
+      ['Sample', input1],
+      ['Mid', input2],
+      ['Large', input3],
+      ['Custom', input4],
+    ],
+    3
+  );
+  const grid = useMemo(() => parseInput(input.value), [input.value]);
   const [state, dispatch] = useReducer(reducer, grid, initializeState);
 
   const [runState, runRef, setRunning] = useRefState(false);
@@ -49,6 +57,10 @@ export default function Day10(): ReactElement {
       frame.current != null && cancelAnimationFrame(frame.current);
     };
   }, [runRef]);
+
+  useEffect(() => {
+    dispatch({ type: 'reset', grid });
+  }, [grid]);
 
   return (
     <>
@@ -92,6 +104,14 @@ export default function Day10(): ReactElement {
             <Button
               variant={'subtle'}
               onClick={() => {
+                setShowInput((x) => !x);
+              }}
+            >
+              {showInput ? 'Hide' : 'Edit'} input
+            </Button>
+            <Button
+              variant={'subtle'}
+              onClick={() => {
                 dispatch({ type: 'reset', grid });
               }}
             >
@@ -99,6 +119,13 @@ export default function Day10(): ReactElement {
             </Button>
           </div>
         </Group>
+
+        {showInput && (
+          <>
+            <h2>Input</h2>
+            <InputSelector input={input} rows={10} />
+          </>
+        )}
 
         <Card mt={'md'}>
           <Center className={state.done ? css.bigFlash : undefined}>

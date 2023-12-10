@@ -48,7 +48,7 @@ function findNewNeighnours(
   const fromNode = grid[y][x];
 
   neswDirs.forEach(([dx, dy], toNesw) => {
-    const connectsTo = pipeConnections[fromNode.type][toNesw];
+    const connectsTo = pipeConnections[fromNode.type]?.[toNesw] ?? false;
     if (!connectsTo) return;
 
     const nx = x + dx;
@@ -58,7 +58,7 @@ function findNewNeighnours(
     if (visited) return;
 
     const fromNesw = (2 + toNesw) % 4;
-    const connectsFrom = pipeConnections[toNode.type][fromNesw];
+    const connectsFrom = pipeConnections[toNode.type]?.[fromNesw] ?? false;
 
     if (connectsFrom) {
       const newDist = dist + 1;
@@ -124,17 +124,19 @@ export const mazeReducer: Reducer<State, MazeAction> = (state, action) => {
       let sx = -1;
       let sy = -1;
       for (let y = 0; y < grid.length; y++) {
-        for (let x = 0; x < grid.length; x++) {
+        for (let x = 0; x < grid[y].length; x++) {
           if (grid[y][x].type === S) {
             sy = y;
             sx = x;
           }
         }
       }
+      console.log({ sx, sy });
       const start: QueueItem = { x: sx, y: sy, dist: 0 };
       return update(state, start);
     }
     case 'search': {
+      if (state.queue.length === 0) return state;
       const [head, ...tail] = state.queue;
       return update({ ...state, queue: tail }, head);
     }
@@ -146,15 +148,12 @@ function update(state: State, next: QueueItem): State {
   const newGrid = setDist(state.grid, next);
   const newItems = findNewNeighnours(state.grid, next);
 
-  const more = newItems.length > 0;
-
   return {
     ...state,
-    done: !more,
     maxDistance: Math.max(state.maxDistance, next.dist),
     grid: newGrid,
     queue: state.queue.concat(newItems),
-    actions: more ? [SEARCH, ...state.actions] : state.actions,
+    actions: [SEARCH, ...state.actions],
   };
 }
 

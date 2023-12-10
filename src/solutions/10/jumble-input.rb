@@ -1,0 +1,1 @@
+puts $<.readlines.map { |line| line.gsub('.') { ".F7LJ|-".chars.sample } }
