@@ -1,4 +1,5 @@
 import {
+  memo,
   type ReactElement,
   useEffect,
   useMemo,
@@ -19,7 +20,7 @@ import input2 from './input2.txt?raw';
 import { useInput } from '../../components/InputSelector.tsx';
 import { DayTitle } from '../../components/DayTitle.tsx';
 import css from './day10.module.scss';
-import { initializeState, parseInput, reducer, S } from './state.ts';
+import { initializeState, parseInput, reducer, S, type Node } from './state.ts';
 import { useRefState } from '../../utils/useRefState.ts';
 
 export default function Day10(): ReactElement {
@@ -105,33 +106,74 @@ export default function Day10(): ReactElement {
           </Center>
         </Card>
 
-        <Card component={'pre'} fz={10}>
+        <Card component={'pre'} fz={10} style={{ lineHeight: 1 }}>
           {state.grid.map((row, y) => (
-            <Center key={y}>
-              {row.map((col, x) => {
-                let className: string;
-                if (col.dist < 0) {
-                  className = css.undiscovered;
-                } else {
-                  className = css.bigFlash;
-                  if (col.type === S) className += ' ' + css.start;
-                  else className += ' ' + css.discovered;
-                }
-
-                return (
-                  <span
-                    key={y + '.' + x}
-                    className={className}
-                    title={col.dist >= 0 ? col.dist.toString() : undefined}
-                  >
-                    {col.type}
-                  </span>
-                );
-              })}
-            </Center>
+            <Row key={y} row={row} />
           ))}
         </Card>
       </Container>
     </>
   );
 }
+
+const Row = memo(function RowComp({ row }: { row: Node[] }): ReactElement {
+  return (
+    <Center>
+      {row.map((col, x) => (
+        <Col key={x} col={col} />
+      ))}
+    </Center>
+  );
+});
+
+const Col = memo(function ColComp({ col }: { col: Node }): ReactElement {
+  let char: string;
+  let className: string;
+
+  if (col.dist < 0) {
+    className = css.undiscovered;
+    char = col.type;
+  } else {
+    className = css.bigFlash;
+    if (col.type === S) className += ' ' + css.start;
+    else className += ' ' + css.discovered;
+
+    switch (col.type) {
+      case '-': {
+        char = '═';
+        break;
+      }
+      case 'F': {
+        char = '╔';
+        break;
+      }
+      case '|': {
+        char = '║';
+        break;
+      }
+      case 'J': {
+        char = '╝';
+        break;
+      }
+      case 'L': {
+        char = '╚';
+        break;
+      }
+      case '7': {
+        char = '╗';
+        break;
+      }
+      default:
+        char = col.type;
+    }
+  }
+
+  return (
+    <span
+      className={className}
+      title={col.dist >= 0 ? col.dist.toString() : undefined}
+    >
+      {char}
+    </span>
+  );
+});
