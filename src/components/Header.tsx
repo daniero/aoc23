@@ -27,14 +27,19 @@ export function Header({ current }: { current?: number }): ReactElement {
               <Link
                 key={day}
                 href={'/day' + day}
-                onClick={solved ? undefined : prevent}
+                onClick={solved === false ? prevent : undefined}
               >
                 <Button
                   component={'a'}
                   size={'xs'}
                   radius={'xl'}
                   color={'xred'}
-                  disabled={!solved}
+                  classNames={
+                    solved === 'fancy'
+                      ? { root: steez.fancySolution }
+                      : undefined
+                  }
+                  disabled={solved === false}
                   variant={isCurrentPage ? 'filled' : 'default'}
                   aria-current={isCurrentPage && 'page'}
                 >

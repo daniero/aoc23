@@ -49,9 +49,16 @@
     background-position: var(--bg-size) 0;
   }
 }
+
 @media (prefers-reduced-motion: no-preference) {
   .aoc:hover {
     animation: none;
   }
 }
 
+.fancySolution {
+  box-shadow: 0 0 10px rgba(230, 100, 75, 0.15);
+  &:hover {
+    box-shadow: 0 0 5px #ffa500, 0 0 15px #ffa500, 0 0 20px #ffa500, 0 0 40px #ffa500, 0 0 60px #ff0000, 0 0 10px #ff8d00, 0 0 98px #ff0000;
+  }
+}
