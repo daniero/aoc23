@@ -1,5 +1,12 @@
-import { Button, Card, Center, Group, Slider } from '@mantine/core';
-import { type ReactElement, useEffect, useReducer, useRef } from 'react';
+import { Button, Card, Center, Group, SegmentedControl } from '@mantine/core';
+import {
+  type ReactElement,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import { useRefState } from '../../utils/useRefState.ts';
 import {
   type HighlightableNumber,
@@ -9,10 +16,16 @@ import {
 import styles from './styles.module.scss';
 
 export function OasisHistoryExtrapolator({
-  log,
+  log: input,
 }: {
   log: number[][];
 }): ReactElement {
+  const [part, setPart] = useState<1 | 2>(1);
+  const log = useMemo(
+    () => (part === 1 ? input : input.map((line) => line.reverse())),
+    [part, input]
+  );
+
   const [state, dispatch] = useReducer(mainReducer, log, initializeState);
 
   const [runState, runRef, setRunning] = useRefState(false);
@@ -69,17 +82,15 @@ export function OasisHistoryExtrapolator({
             Step
           </Button>
         </div>
-        <div style={{ flexGrow: 1, display: 'none' }}>
-          <Slider
-            color={'xgreen'}
-            label={'speed'}
-            min={1}
-            max={10}
-            marks={[
-              { value: 1, label: '10%' },
-              { value: 5, label: '50%' },
-              { value: 10, label: '100%' },
+        <div style={{ flexGrow: 1 }}>
+          <SegmentedControl
+            data={[
+              { label: 'Part 1', value: '1' },
+              { label: 'Part 2', value: '2' },
             ]}
+            onChange={(v) => {
+              setPart(parseInt(v) as 1 | 2);
+            }}
           />
         </div>
         <div style={{ flexGrow: 2, textAlign: 'right' }}>
@@ -105,7 +116,11 @@ export function OasisHistoryExtrapolator({
         </Center>
       </Card>
 
-      <Card component={'pre'} fz={outputFontSize}>
+      <Card
+        component={'pre'}
+        fz={outputFontSize}
+        dir={part === 1 ? 'ltr' : 'rtl'}
+      >
         {state.processed.map((line, i) => {
           return (
             <div key={'p' + i}>
