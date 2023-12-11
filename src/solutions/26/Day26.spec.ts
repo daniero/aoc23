@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import input1 from './input1.txt?raw';
-import { parseInput, solvePart1, solvePart2 } from './Day26.tsx';
+
+import { parseInput, solvePart1, solvePart2 } from './Foo.ts';
 
 describe.skip('Day 26', () => {
   const grid = parseInput(input1);
