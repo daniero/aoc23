@@ -5,6 +5,7 @@ import input2 from './input2.txt?raw';
 import { InputSelector, useInput } from '../../components/InputSelector.tsx';
 import { DayTitle } from '../../components/DayTitle.tsx';
 import { match } from '../../utils/regex.ts';
+import { by } from '../../utils/arrays.ts';
 
 export default function Day7(): ReactElement {
   const input = useInput([
@@ -81,17 +82,6 @@ export function parseInput(input: string) {
 
       return { cards: c, bid: parseInt(b) };
     });
-}
-
-function by<T>(fn: (x: T) => number | string): (a: T, b: T) => number {
-  return (a: T, b: T) => {
-    const vb = fn(b);
-    const va = fn(a);
-    if (typeof vb === 'string' || typeof va === 'string') {
-      return va.toString().localeCompare(vb.toString());
-    }
-    return va - vb;
-  };
 }
 
 export function solvePart1(hands: Hands): any {
