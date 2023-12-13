@@ -4,7 +4,7 @@ import input1 from './input1.txt?raw';
 import input2 from './input2.txt?raw';
 import { InputSelector, useInput } from '../../components/InputSelector.tsx';
 import { DayTitle } from '../../components/DayTitle.tsx';
-import { parseInput, solvePart1 } from './Foo.ts';
+import { parseInput, solvePart1 } from './HotSpringArrangementFinder.ts';
 
 export default function Day12(): ReactElement {
   const input = useInput([
