@@ -1,4 +1,5 @@
 import { match } from '../../utils/regex.ts';
+import { memo } from '../../utils/functions.ts';
 
 type HotSpringArrangement = [string, number[]];
 
@@ -42,27 +43,29 @@ export function findArrangements(spring: string, numbers: number[]): number {
   return rec(spring, numbers, 0, 0);
 }
 
-function rec(
-  spring: string,
-  numbers: number[],
-  index: number,
-  offset: number
-): number {
-  if (index >= numbers.length) {
-    const endOk = offset >= spring.length || !spring.includes('#', offset);
-    return endOk ? 1 : 0;
-  }
+const rec = memo(
+  (
+    spring: string,
+    numbers: number[],
+    index: number,
+    offset: number
+  ): number => {
+    if (index >= numbers.length) {
+      const endOk = offset >= spring.length || !spring.includes('#', offset);
+      return endOk ? 1 : 0;
+    }
 
-  const number = numbers[index];
-  const pos = findPossiblePositions(spring, offset, number);
+    const number = numbers[index];
+    const pos = findPossiblePositions(spring, offset, number);
 
-  let combos = 0;
-  pos.forEach((p) => {
-    combos += rec(spring, numbers, index + 1, p + number + 1);
-  });
-
-  return combos;
-}
+    let combos = 0;
+    pos.forEach((p) => {
+      combos += rec(spring, numbers, index + 1, p + number + 1);
+    });
+    return combos;
+  },
+  (s, n, i, o) => s.substring(o) + ':' + n.slice(i).join(',')
+);
 
 function findPossiblePositions(
   spring: string,
