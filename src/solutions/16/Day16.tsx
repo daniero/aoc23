@@ -31,7 +31,7 @@ export default function Day16(): ReactElement {
   const [, setPart] = useState<1 | 2>(1);
   const [showInput, setShowInput] = useState(false);
 
-  const input = useInput([['Sample', input1]]);
+  const input = useInput([['Custom', input1]]);
   const grid = useMemo(() => parseInput(input.value), [input.value]);
 
   const [state, dispatch] = useReducer(reducer, grid, initializeState);
@@ -151,18 +151,21 @@ const Row = memo(function RowComp({ row }: { row: Node[] }): ReactElement {
 
 const Col = memo(function ColComp({ col }: { col: Node }): ReactElement {
   let className;
+  let char;
 
-  if (col.type === '.') {
-    className = style.empty;
-  } else if (col.energized) {
+  if (col.energized && col.type === '.') {
     className = style.bigFlash + ' ' + style.energized;
+    char = '#';
+  } else if (col.energized) {
+    className = style.activated + ' ' + style.bigFlash;
+    char = col.type;
+  } else if (col.type === '.') {
+    className = style.empty;
+    char = '·';
   } else {
     className = undefined;
+    char = col.type;
   }
 
-  return (
-    <span className={className}>
-      {col.energized ? '#' : col.type === '.' ? '·' : col.type}
-    </span>
-  );
+  return <span className={className}>{char}</span>;
 });

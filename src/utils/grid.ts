@@ -22,3 +22,7 @@ export function neighbours<T>(
       .map((nx) => [grid[ny][nx], nx, ny] as Neighbour<T>);
   });
 }
+
+export function isInside(grid: any[][], x: number, y: number): boolean {
+  return y >= 0 && y < grid.length && x >= 0 && x < grid[y].length;
+}
