@@ -1,12 +1,13 @@
-import { replace } from '../../utils/arrays.ts';
 import { type Reducer } from 'react';
-import { isInside } from '../../utils/grid.ts';
+import { bump, type Grid, isInside, type Row, set } from '../../utils/grid.ts';
 
 type Tile = '.' | '/' | '\\' | '|' | '-';
 
 export interface Node {
   type: Tile;
-  energized: boolean;
+  energized: number;
+  lastVisit: Nesw | null;
+  visitedFrom: [boolean, boolean, boolean, boolean];
 }
 
 type Nesw = 0 | 1 | 2 | 3;
@@ -23,59 +24,71 @@ interface Beam {
   x: number;
   y: number;
   dir: Nesw;
+  prevDir: Nesw;
 }
 
 function moveForward(beam: Beam): Beam {
   const [dx, dy] = neswDirs[beam.dir];
   return {
     ...beam,
+    prevDir: beam.dir,
     x: beam.x + dx,
     y: beam.y + dy,
   };
 }
 
 function turnRight(beam: Beam): Beam {
-  const newDir = ((beam.dir + 1) % 4) as Nesw;
   return {
     ...beam,
-    dir: newDir,
+    prevDir: beam.dir,
+    dir: ((beam.dir + 1) % 4) as Nesw,
   };
 }
 function turnLeft(beam: Beam): Beam {
-  const newDir = ((beam.dir + 3) % 4) as Nesw;
   return {
     ...beam,
-    dir: newDir,
+    prevDir: beam.dir,
+    dir: ((beam.dir + 3) % 4) as Nesw,
   };
 }
 
-export function parseInput(input: string): Node[][] {
-  console.log(input);
-  return input
-    .trim()
-    .split('\n')
-    .map((line) =>
-      line.split('').map<Node>((c) => ({ type: c as Tile, energized: false }))
-    );
+export function parseInput(input: string): Grid<Node> {
+  return {
+    v: 0,
+    rows: input
+      .trim()
+      .split('\n')
+      .map<Row<Node>>((line) => ({
+        v: 0,
+        cols: line.split('').map((c) => ({
+          type: c as Tile,
+          energized: 0,
+          lastVisit: null,
+          visitedFrom: [false, false, false, false],
+        })),
+      })),
+  };
 }
 
 export interface State {
   done: boolean;
-  grid: Node[][];
+  grid: Grid<Node>;
   energizedTiles: number;
   beams: Beam[];
 }
 
-export function initializeState(grid: Node[][]): State {
+export function initializeState(grid: Grid<Node>): State {
   return {
     done: false,
     energizedTiles: 0,
     grid,
-    beams: [{ x: -1, y: 0, dir: 1 }],
+    beams: [{ x: -1, y: 0, dir: 1, prevDir: 1 }],
   };
 }
 
-export type StateAction = { type: 'reset'; grid: Node[][] } | { type: 'tick' };
+export type StateAction =
+  | { type: 'reset'; grid: Grid<Node> }
+  | { type: 'tick' };
 
 export const reducer: Reducer<State, StateAction> = (state, action) => {
   switch (action.type) {
@@ -91,7 +104,7 @@ export const reducer: Reducer<State, StateAction> = (state, action) => {
       const newBeams = state.beams
         .flatMap((beam) => {
           const next = moveForward(beam);
-          const tile = state.grid[next.y]?.[next.x]?.type;
+          const tile = state.grid.rows[next.y]?.cols?.[next.x]?.type;
 
           if (tile === '\\') {
             if (next.dir === 0 || next.dir === 2) {
@@ -116,21 +129,43 @@ export const reducer: Reducer<State, StateAction> = (state, action) => {
 
           return next;
         })
-        .filter((beam) => isInside(state.grid, beam.x, beam.y));
+        .filter(
+          (beam) =>
+            isInside(state.grid, beam.x, beam.y) &&
+            !state.grid.rows[beam.y].cols[beam.x].visitedFrom[beam.prevDir]
+        );
+
+      if (newBeams.length === 0) {
+        return {
+          ...state,
+          done: true,
+          beams: [],
+        };
+      }
 
       let newCount = state.energizedTiles;
 
-      const newGrid = newBeams.reduce((oldGrid, beam) => {
-        const oldTile = oldGrid[beam.y][beam.x];
+      const newGrid: Grid<Node> = newBeams.reduce((oldGrid, beam) => {
+        const oldTile: Node = oldGrid.rows[beam.y].cols[beam.x];
 
-        if (!oldTile.energized) {
-          newCount++;
-          return energize(oldGrid, beam.x, beam.y);
+        if (!oldTile.visitedFrom[beam.prevDir]) {
+          if (!oldTile.energized) {
+            newCount++;
+          }
+
+          return set(oldGrid, beam.x, beam.y, (s) => ({
+            ...s,
+            energized: s.energized + 1,
+            lastVisit: beam.dir,
+            visitedFrom: s.visitedFrom.with(
+              beam.prevDir,
+              true
+            ) as Node['visitedFrom'],
+          }));
         } else {
           return oldGrid;
         }
-      }, state.grid);
-
+      }, bump(state.grid));
       return {
         ...state,
         energizedTiles: newCount,
@@ -140,9 +175,3 @@ export const reducer: Reducer<State, StateAction> = (state, action) => {
     }
   }
 };
-
-function energize(grid: Node[][], x: number, y: number): Node[][] {
-  return replace(grid, y, (row) => {
-    return replace(row, x, (s) => ({ ...s, energized: true }));
-  });
-}

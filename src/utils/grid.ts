@@ -1,28 +1,46 @@
-import { range } from './arrays.ts';
+import { replace } from './arrays.ts';
 
-/**
- * [element, x, y]
- */
-type Neighbour<T> = [T, number, number];
-
-export function neighbours<T>(
-  grid: T[][],
-  x: number,
-  y: number
-): Array<Neighbour<T>> {
-  const yStart = Math.max(0, y - 1);
-  const yStop = Math.min(grid.length, y + 2);
-
-  return range(yStart, yStop).flatMap((ny) => {
-    const xStart = Math.max(0, x - 1);
-    const xStop = Math.min(grid[ny].length, x + 2);
-
-    return range(xStart, xStop)
-      .filter((nx) => nx !== x || ny !== y)
-      .map((nx) => [grid[ny][nx], nx, ny] as Neighbour<T>);
-  });
+export interface Grid<X> {
+  v: number;
+  rows: Array<Row<X>>;
 }
 
-export function isInside(grid: any[][], x: number, y: number): boolean {
-  return y >= 0 && y < grid.length && x >= 0 && x < grid[y].length;
+export interface Row<X> {
+  v: number;
+  cols: X[];
+}
+
+export function bump<T>(grid: Grid<T>): Grid<T> {
+  return {
+    ...grid,
+    v: grid.v + 1,
+  };
+}
+
+export function isInside(grid: Grid<unknown>, x: number, y: number): boolean {
+  return (
+    y >= 0 && y < grid.rows.length && x >= 0 && x < grid.rows[y].cols.length
+  );
+}
+
+export function set<T>(
+  grid: Grid<T>,
+  x: number,
+  y: number,
+  replaceFn: (v: T) => T
+): Grid<T> {
+  const row = grid.rows[y];
+
+  if (row.v !== grid.v) {
+    return {
+      ...grid,
+      rows: replace(grid.rows, y, (row) => ({
+        v: grid.v,
+        cols: replace(row.cols, x, replaceFn),
+      })),
+    };
+  }
+
+  row.cols[x] = replaceFn(row.cols[x]);
+  return grid;
 }

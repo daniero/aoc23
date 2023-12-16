@@ -6,7 +6,8 @@ import input1 from './input1.txt?raw';
 import input2 from './input2.txt?raw';
 import { loop } from '../../utils/arrays.ts';
 import { match } from '../../utils/regex.ts';
-import { neighbours } from '../../utils/grid.ts';
+
+import { neighbours } from '../../utils/matrix.ts';
 
 export default function Day2(): ReactElement {
   const input = useInput([

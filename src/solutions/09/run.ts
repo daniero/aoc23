@@ -3,7 +3,7 @@ import { initializeState, mainReducer } from './state.ts';
 
 const part = 1;
 
-const input = require('fs').readFileSync('input1.txt', 'utf8');
+const input = require('fs').readFileSync('input2.txt', 'utf8');
 const log = parseInput(input);
 const reversed = log.map((h) => h.reverse());
 

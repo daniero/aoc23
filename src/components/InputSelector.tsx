@@ -62,7 +62,7 @@ export function InputSelector({
       )}
 
       <Textarea
-        styles={{ input: { fontFamily: 'monospace' } }}
+        styles={{ input: { fontFamily: 'monospace', resize: 'both' } }}
         rows={rows}
         value={input.value}
         onInput={(e) => {

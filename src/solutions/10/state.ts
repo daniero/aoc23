@@ -136,7 +136,7 @@ export const mazeReducer: Reducer<State, MazeAction> = (state, action) => {
       return update(state, start);
     }
     case 'search': {
-      if (state.queue.length === 0) return state;
+      if (state.queue.length === 0) return { ...state, done: true };
       const [head, ...tail] = state.queue;
       return update({ ...state, queue: tail }, head);
     }
