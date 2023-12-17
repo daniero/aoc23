@@ -1,1 +1,2 @@
-Another input here
+12
+34

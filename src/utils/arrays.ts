@@ -32,13 +32,26 @@ export function pairs<T>(elements: T[]): Array<[T, T]> {
   return pairs;
 }
 
-export function by<T>(fn: (x: T) => number | string): (a: T, b: T) => number {
+export function by<T>(
+  ...fns: [(x: T) => number | string, ...Array<(x: T) => number | string>]
+): (a: T, b: T) => number {
   return (a: T, b: T) => {
-    const vb = fn(b);
-    const va = fn(a);
-    if (typeof vb === 'string' || typeof va === 'string') {
-      return va.toString().localeCompare(vb.toString());
+    for (const fn of fns) {
+      const vb = fn(b);
+      const va = fn(a);
+
+      let result;
+      if (typeof vb === 'string' || typeof va === 'string') {
+        result = va.toString().localeCompare(vb.toString());
+      } else {
+        result = va - vb;
+      }
+
+      if (result !== 0) {
+        return result;
+      }
     }
-    return va - vb;
+
+    return 0;
   };
 }

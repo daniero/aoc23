@@ -1,5 +1,6 @@
 import { type Reducer } from 'react';
 import { bump, type Grid, isInside, type Row, set } from '../../utils/grid.ts';
+import { type Nesw, nesw4Dirs } from '../../utils/nesw.ts';
 
 type Tile = '.' | '/' | '\\' | '|' | '-';
 
@@ -10,16 +11,6 @@ export interface Node {
   visitedFrom: [boolean, boolean, boolean, boolean];
 }
 
-type Nesw = 0 | 1 | 2 | 3;
-
-// x,y
-const neswDirs = [
-  [0, -1],
-  [1, 0],
-  [0, 1],
-  [-1, 0],
-] as const;
-
 interface Beam {
   x: number;
   y: number;
@@ -28,7 +19,7 @@ interface Beam {
 }
 
 function moveForward(beam: Beam): Beam {
-  const [dx, dy] = neswDirs[beam.dir];
+  const [dx, dy] = nesw4Dirs[beam.dir];
   return {
     ...beam,
     prevDir: beam.dir,

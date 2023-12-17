@@ -4,10 +4,8 @@ import { DayTitle } from '../../components/DayTitle.tsx';
 import { InputSelector, useInput } from '../../components/InputSelector.tsx';
 import input1 from './input1.txt?raw';
 import input2 from './input2.txt?raw';
-import { loop } from '../../utils/arrays.ts';
+import { loop, range } from '../../utils/arrays.ts';
 import { match } from '../../utils/regex.ts';
-
-import { neighbours } from '../../utils/matrix.ts';
 
 export default function Day2(): ReactElement {
   const input = useInput([
@@ -117,6 +115,23 @@ export function createGrid(input: string): Node[][] {
   });
 
   return grid;
+}
+
+type Neighbour<T> = [T, number, number];
+
+// coordinates/ranges off by one, works for this solution somehow
+function neighbours<T>(grid: T[][], x: number, y: number): Array<Neighbour<T>> {
+  const yStart = Math.max(0, y - 1);
+  const yStop = Math.min(grid.length, y + 2);
+
+  return range(yStart, yStop).flatMap((ny) => {
+    const xStart = Math.max(0, x - 1);
+    const xStop = Math.min(grid[ny].length, x + 2);
+
+    return range(xStart, xStop)
+      .filter((nx) => nx !== x || ny !== y)
+      .map((nx) => [grid[ny][nx], nx, ny] as Neighbour<T>);
+  });
 }
 
 export function solvePart1<T extends Node>(
