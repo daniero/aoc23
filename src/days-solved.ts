@@ -15,7 +15,7 @@ export const daysSolved = {
   14: false,
   15: false,
   16: 'fancy',
-  17: false,
+  17: true,
   18: false,
   19: false,
   20: false,
