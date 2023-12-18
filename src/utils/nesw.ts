@@ -14,6 +14,14 @@ export interface Coordinate {
   y: number;
 }
 
+export function go(nesw: Nesw, from: Coordinate, dist = 1): Coordinate {
+  const dir = nesw4Dirs[nesw];
+  return {
+    x: from.x + dir[0] * dist,
+    y: from.y + dir[1] * dist,
+  };
+}
+
 export const nesw4Dirs = [
   [0, -1],
   [1, 0],
