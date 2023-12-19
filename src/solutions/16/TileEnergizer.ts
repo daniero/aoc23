@@ -1,6 +1,6 @@
 import { type Reducer } from 'react';
 import { bump, type Grid, isInside, type Row, set } from '../../utils/grid.ts';
-import { type Nesw, nesw4Dirs } from '../../utils/nesw.ts';
+import { E, N, type Nesw, nesw4Dirs, S, W } from '../../utils/nesw.ts';
 
 type Tile = '.' | '/' | '\\' | '|' | '-';
 
@@ -68,12 +68,18 @@ export interface State {
   beams: Beam[];
 }
 
-export function initializeState(grid: Grid<Node>): State {
+export function initializeState({
+  grid,
+  start = { x: -1, y: 0, dir: 1, prevDir: 1 },
+}: {
+  grid: Grid<Node>;
+  start?: Beam;
+}): State {
   return {
     done: false,
     energizedTiles: 0,
     grid,
-    beams: [{ x: -1, y: 0, dir: 1, prevDir: 1 }],
+    beams: [start],
   };
 }
 
@@ -84,7 +90,7 @@ export type StateAction =
 export const reducer: Reducer<State, StateAction> = (state, action) => {
   switch (action.type) {
     case 'reset': {
-      return initializeState(action.grid);
+      return initializeState({ grid: action.grid });
     }
     case 'tick': {
       if (state.done || state.beams.length === 0) {
@@ -166,3 +172,31 @@ export const reducer: Reducer<State, StateAction> = (state, action) => {
     }
   }
 };
+
+export function run(grid: Grid<Node>, start?: Beam): State {
+  let state = initializeState({ grid, start });
+
+  while (!state.done) {
+    state = reducer(state, { type: 'tick' });
+  }
+  return state;
+}
+
+export function runAll(grid: Grid<Node>): number {
+  const x = grid.rows[0].cols.length;
+  const y = grid.rows.length;
+
+  const startPositions: Beam[] = [
+    ...grid.rows.map((_, y) => ({ x: -1, y, dir: E, prevDir: E })),
+    ...grid.rows.map((_, y) => ({ x, y, dir: W, prevDir: W })),
+    ...grid.rows[0].cols.map((_, x) => ({ x, y: -1, dir: S, prevDir: S })),
+    ...grid.rows[y - 1].cols.map((_, x) => ({ x, y, dir: N, prevDir: N })),
+  ];
+
+  let max = -1;
+  startPositions.forEach((p) => {
+    max = Math.max(max, run(grid, p).energizedTiles);
+  });
+
+  return max;
+}

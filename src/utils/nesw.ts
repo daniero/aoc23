@@ -1,9 +1,9 @@
-export const N = 0;
-export const E = 1;
-export const S = 2;
-export const W = 3;
+export type Nesw = 0 | 1 | 2 | 3;
 
-export type Nesw = typeof N | typeof E | typeof S | typeof W;
+export const N: Nesw = 0;
+export const E: Nesw = 1;
+export const S: Nesw = 2;
+export const W: Nesw = 3;
 
 export function isOpposite(a: Nesw, b: Nesw): boolean {
   return (a + 2) % 4 === b;

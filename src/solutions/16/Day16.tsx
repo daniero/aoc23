@@ -47,7 +47,7 @@ export default function Day16(): ReactElement {
   );
   const grid = useMemo(() => parseInput(input.value), [input.value]);
 
-  const [state, dispatch] = useReducer(reducer, grid, initializeState);
+  const [state, dispatch] = useReducer(reducer, { grid }, initializeState);
 
   const [runState, runRef, setRunning] = useRefState(false);
   const frame = useRef<number>();
