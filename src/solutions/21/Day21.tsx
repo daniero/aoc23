@@ -21,10 +21,13 @@ import css from './day21.module.scss';
 import cx from 'classix';
 
 export default function Day21(): ReactElement {
-  const input = useInput([
-    ['Sample', input1],
-    ['Large', input2],
-  ]);
+  const input = useInput(
+    [
+      ['Sample', input1],
+      ['Sample repeated', input2],
+    ],
+    1
+  );
 
   const parsedInput = useMemo(() => parseInput(input.value), [input.value]);
   const [state, dispatch] = useReducer(
