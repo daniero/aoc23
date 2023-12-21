@@ -128,7 +128,7 @@ export const reducer: Reducer<State, StateAction> = (state, action) => {
         })
         .filter(
           (beam) =>
-            isInside(state.grid, beam.x, beam.y) &&
+            isInside(state.grid, beam) &&
             !state.grid.rows[beam.y].cols[beam.x].visitedFrom[beam.prevDir]
         );
 
@@ -150,7 +150,7 @@ export const reducer: Reducer<State, StateAction> = (state, action) => {
             newCount++;
           }
 
-          return set(oldGrid, beam.x, beam.y, (s) => ({
+          return set(oldGrid, beam, (s) => ({
             ...s,
             energized: s.energized + 1,
             lastVisit: beam.dir,

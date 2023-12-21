@@ -45,7 +45,6 @@ export const mainReducer: Reducer<State, DispatchAction> = (state, action) => {
     }
     case 'tick': {
       if (state.actions.length === 0) {
-        console.log('nothing to do');
         return state;
       }
       const [nextAction, ...restActions] = state.actions;
@@ -68,8 +67,6 @@ function sum(processed: HighlightableNumber[][]): number {
 }
 
 const stateReducer: Reducer<State, StateAction> = (state, action) => {
-  console.log(action);
-
   switch (action.type) {
     case 'fetchNextHistory': {
       const [nextHistory, ...restLog] = state.log;
